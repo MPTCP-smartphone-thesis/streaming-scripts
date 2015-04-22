@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser(description="Generate map image with dots where
 parser.add_argument("-I", "--db-ip", help="MongoDB's IP address", default=mdb.DB_IP)
 parser.add_argument("-P", "--db-port", type=int, help="MongoDB's port", default=mdb.DB_PORT)
 parser.add_argument("-N", "--db-name", help="MongoDB's DB name", default=mdb.DB_NAME)
+parser.add_argument("-C", "--db-connect", help="MongoDB's DB name", action='store_true')
 parser.add_argument("wlan", help="WLan MAC address")
 parser.add_argument("timestart", type=int, help="Start: from this timestamp")
 parser.add_argument("timeend", type=int, help="End: to this timestamp")
@@ -66,9 +67,9 @@ def get_point_size(meters, mbp):
     return meters / mbp
 
 class Map(object):
-    def __init__(self, wlan, time_start, time_end, zoom=18, db_ip=mdb.DB_IP, db_port=mdb.DB_PORT, db_name=mdb.DB_NAME):
+    def __init__(self, wlan, time_start, time_end, zoom=18, db_ip=mdb.DB_IP, db_port=mdb.DB_PORT, db_name=mdb.DB_NAME, db_connect=False):
         bbox = None
-        with mdb.Database(db_ip, db_port, db_name) as db:
+        with mdb.Database(db_ip, db_port, db_name, db_connect) as db:
             pos_infos = db.get_position(wlan, time_start, time_end)
 
         count = pos_infos.count()
@@ -146,7 +147,7 @@ class Map(object):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    mm = Map(args.wlan, args.timestart, args.timeend, args.zoom, args.db_ip, args.db_port, args.db_name)
+    mm = Map(args.wlan, args.timestart, args.timeend, args.zoom, args.db_ip, args.db_port, args.db_name, args.db_connect)
     filename = args.output + "/map_" + args.wlan + "_" + time.strftime("%Y%m%d-%H%M%S") + ".pdf"
     mm.draw(filename)
     print("File exported to: " + filename)

@@ -28,8 +28,8 @@ DB_PORT = 27017
 DB_NAME = "mpctrl"
 
 class Database(object):
-    def __init__(self, ip=DB_IP, port=DB_PORT, db_name=DB_NAME):
-        if os.path.exists('mongo.sh') and not os.path.exists('mongo.sh.skip'):
+    def __init__(self, ip=DB_IP, port=DB_PORT, db_name=DB_NAME, db_connect=False):
+        if db_connect and os.path.exists('mongo.sh') and not os.path.exists('mongo.sh.skip'):
             self.proc = subprocess.Popen(['./mongo.sh'])
             time.sleep(2)
         else:
