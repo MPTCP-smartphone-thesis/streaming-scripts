@@ -106,7 +106,9 @@ class Map(object):
             acc.append(accuracy)
             annot.append(info['netType']) # TODO annotate
 
-        bbox = min_lon, min_lat, max_lon, max_lat
+        lon_extra = (max_lon - min_lon) / 4
+        lat_extra = (max_lat - min_lat) / 4
+        bbox = min_lon - lon_extra, min_lat - lat_extra, max_lon + lon_extra, max_lat + lat_extra
         return points, acc, annot, bbox
 
     def __get_coord_meters(self):
