@@ -75,7 +75,7 @@ class Map(object):
         count = pos_infos.count()
         if count < 2:
             raise Exception("No position info: " + str(count))
-        self.points, self.acc, self.annot, bbox = self.__get_info(pos_infos)
+        self.points, self.acc, self.annot, self.colors, bbox = self.__get_info(pos_infos)
 
         self.mm = geotiler.Map(extent=bbox, zoom=zoom)
         self.mbp = get_meter_by_pixel(self.mm.center[1], zoom)
@@ -89,6 +89,7 @@ class Map(object):
         points = []
         acc = []
         annot = []
+        colors = []
         for info in pos_infos:
             lat = info['posLatitude']
             lon = info['posLongitude']
@@ -104,13 +105,19 @@ class Map(object):
             logging.debug("Pts: " + str(accuracy) + " - " + str((lon, lat)))
 
             points.append((lon, lat))
-            acc.append(accuracy)
-            annot.append(info['netType']) # TODO annotate
+            if 'tracking' in info and info['tracking']:
+                acc.append(1)
+                annot.append(None)
+                colors.append('b')
+            else:
+                acc.append(accuracy)
+                annot.append(info['netType']) # TODO annotate
+                colors.append('r')
 
         lon_extra = (max_lon - min_lon) / 4
         lat_extra = (max_lat - min_lat) / 4
         bbox = min_lon - lon_extra, min_lat - lat_extra, max_lon + lon_extra, max_lat + lat_extra
-        return points, acc, annot, bbox
+        return points, acc, annot, colors, bbox
 
     def __get_coord_meters(self):
         x = []
@@ -124,9 +131,7 @@ class Map(object):
         return x, y
 
     def draw(self, filename):
-        logging.debug('acc before: ' + str(self.acc))
         self.acc = tuple((np.array(self.acc) / self.mbp / 2) ** 2) # accuracy in pixel
-        logging.debug('acc after: ' + str(self.acc))
 
         x, y = self.__get_coord_meters()
         logging.debug((x, y))
@@ -137,10 +142,11 @@ class Map(object):
         img = geotiler.render_map(self.mm)
         ax.imshow(img)
 
-        ax.scatter(x, y, c='red', edgecolor='red', s=self.acc, alpha=0.1)
+        ax.scatter(x, y, c=self.colors, edgecolor='red', s=self.acc, alpha=0.1)
         ax.plot(x, y)
         for i, txt in enumerate(self.annot):
-            ax.annotate(txt, (x[i],y[i]))
+            if txt:
+                ax.annotate(txt, (x[i],y[i]))
 
         plt.savefig(filename, bbox_inches='tight')
         plt.close()

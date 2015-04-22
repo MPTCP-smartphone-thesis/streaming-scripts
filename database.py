@@ -56,5 +56,5 @@ class Database(object):
             },
             ['ifaces', 'ipRMNet4', 'ipWifi4', 'netReason', 'netType',
              'posLatitude', 'posLongitude', 'posAccuracy',
-             'wifiSignalRSSI', 'wifiBSSID']
+             'wifiSignalRSSI', 'wifiBSSID', 'tracking']
             ).sort('timestamp')
