@@ -2,8 +2,8 @@
 # Usage: ./stop_full_pcap_listener.sh
 
 BASE="/home/mptcp/smartphone-ice"
-STOP_FILE="$BASE/.tcpdump-stop"
-PID_FILE="$BASE/.tcpdump-pid"
+STOP_FILE="$BASE/.tcpdump_ice_stop"
+PID_FILE="$BASE/.tcpdump_ice_pid"
 
 > $STOP_FILE
 chmod 777 "$STOP_FILE"

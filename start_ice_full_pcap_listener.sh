@@ -8,10 +8,10 @@
 IF_MPTCP="$1"
 IF_TCP="$2"
 BASE="/home/mptcp/smartphone-ice"
-FILE="$BASE/.tcpdump-start"
+FILE="$BASE/.tcpdump_ice_start"
 OUT_MPTCP="$BASE/mptcp"
 OUT_TCP="$BASE/tcp"
-PID="$BASE/.tcpdump-pid" # same for all modes: should not run both at the same time!
+PID="$BASE/.tcpdump_ice_pid" # same for all modes: should not run both at the same time!
 TIMEOUT=3600 # 60 minutes
 ARGS="-s 100 tcp port 8000"
 
