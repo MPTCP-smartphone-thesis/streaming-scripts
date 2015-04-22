@@ -19,8 +19,9 @@
 #  MA 02110-1301, USA.
 
 from pymongo import MongoClient
-import subprocess
 import os
+import subprocess
+import time
 
 DB_IP = "localhost"
 DB_PORT = 27017
@@ -30,6 +31,7 @@ class Database(object):
     def __init__(self, ip=DB_IP, port=DB_PORT, db_name=DB_NAME):
         if os.path.exists('mongo.sh') and not os.path.exists('mongo.sh.skip'):
             self.proc = subprocess.Popen(['./mongo.sh'])
+            time.sleep(2)
         else:
             self.proc = None
         self.connection = MongoClient(host=ip, port=port)
@@ -44,7 +46,7 @@ class Database(object):
     def close(self):
         self.connection.close()
         if self.proc:
-            self.proc.terminate()
+            self.proc.kill()
 
     def get_position(self, wifi_mac, timestamp_start, timestamp_end):
         return self.db.handover.find(
