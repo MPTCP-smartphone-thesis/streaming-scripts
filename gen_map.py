@@ -38,7 +38,7 @@ parser.add_argument("timestart", type=int, help="Start: from this timestamp")
 parser.add_argument("timeend", type=int, help="End: to this timestamp")
 # https://wiki.openstreetmap.org/wiki/Zoom_levels
 parser.add_argument("-z", "--zoom", type=int, help="Zoom level for the map", default=18)
-parser.add_argument("-o", "--output", help="Output file")
+parser.add_argument("-o", "--output", help="Output file", default="export")
 
 
 ##################################
@@ -49,6 +49,8 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 import geotiler
+
+import time
 
 
 ##################################
@@ -143,10 +145,6 @@ class Map(object):
 if __name__ == "__main__":
     args = parser.parse_args()
     mm = Map(args.wlan, args.timestart, args.timeend, args.zoom, args.db_ip, args.db_port, args.db_name)
-    if args.output:
-        filename = args.output
-    else:
-        import time
-        filename = "export/map_" + args.wlan + "_" + time.strftime("%Y%m%d-%H%M%S") + ".pdf"
+    filename = args.output + "/map_" + args.wlan + "_" + time.strftime("%Y%m%d-%H%M%S") + ".pdf"
     mm.draw(filename)
     print("File exported to: " + filename)
