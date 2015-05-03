@@ -1,5 +1,7 @@
 #!/bin/bash
 
+read -p "Add info for info.txt file: " INFOTXT
+
 DATE_START=$(date +%s000)
 echo "Start: $DATE_START"
 ./start_ice_full_pcap_distant.sh $DATE_START || exit 1
@@ -23,6 +25,8 @@ DATE_END=$(date +%s000)
 echo "Stop: $DATE_END"
 echo $DATE_END >> "$DIR/dates.log"
 ./stop_ice_full_pcap_distant.sh
+
+echo "$INFOTXT" >> "$DIR/info.txt"
 
 BASE="mptcpdata:/home/mptcp/smartphone-ice"
 scp "$BASE/mptcp/mptcp_ice_${DATE_START}.pcap" "$DIR/mptcp_ice_${DATE_START}_${DATE_END}.pcap"
