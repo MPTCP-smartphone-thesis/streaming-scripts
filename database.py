@@ -54,7 +54,7 @@ class Database(object):
                 'wifiMac': wifi_mac,
                 'timestamp': {"$gt": timestamp_start, "$lt": timestamp_end}
             },
-            ['ifaces', 'ipRMNet4', 'ipWifi4', 'netReason', 'netType',
+            ['ifaces', 'ipRMNet4', 'ipWifi4', 'netReason', 'netType', 'extIp',
              'posLatitude', 'posLongitude', 'posAccuracy',
-             'wifiSignalRSSI', 'wifiBSSID', 'tracking']
+             'wifiSignalRSSI', 'wifiBSSID', 'tracking', 'timestamp']
             ).sort('timestamp')

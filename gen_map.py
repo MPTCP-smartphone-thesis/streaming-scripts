@@ -75,16 +75,21 @@ class Map(object):
         count = pos_infos.count()
         if count < 2:
             raise Exception("No position info: " + str(count))
-        self.points, self.acc, self.annot, self.colors, bbox = self.__get_info(pos_infos)
+        self.points, self.acc, self.annot, self.colors, bbox = self.__get_info(pos_infos, time_start)
 
         self.mm = geotiler.Map(extent=bbox, zoom=zoom)
         self.mbp = get_meter_by_pixel(self.mm.center[1], zoom)
 
-    def __get_info(self, pos_infos):
+    def __get_info(self, pos_infos, time_start):
         min_lat = 90.
         max_lat = -90.
         min_lon = 180.
         max_lon = -180.
+        i = 0
+
+        prev_ip = None
+        ips_all = {None: 0}
+        ips_count = 1
 
         points = []
         acc = []
@@ -106,13 +111,29 @@ class Map(object):
 
             points.append((lon, lat))
             if 'tracking' in info and info['tracking']:
-                acc.append(1)
-                annot.append(None)
-                colors.append('b')
+                ip = info.get('extIp', None)
+                if prev_ip != ip:
+                    prev_ip = ip
+                    if ip in ips_all:
+                        txt = str(ips_all[ip])
+                    else:
+                        ips_all[ip] = ips_count
+                        txt = str(ips_count)
+                        ips_count += 1
+                    annot.append(txt)
+                    acc.append(3)
+                    colors.append('g')
+                else:
+                    annot.append(None)
+                    acc.append(1)
+                    colors.append('b')
             else:
                 acc.append(accuracy)
-                annot.append(info['netType']) # TODO annotate
+                annot.append(info['netType'] + " " + str(i)) # TODO annotate
                 colors.append('r')
+                print("Point: " + str(i) + " -> " + str(int((info['timestamp'] - time_start)/1000)))
+                print(info)
+                i += 1
 
         lon_extra = (max_lon - min_lon) / 4
         lat_extra = (max_lat - min_lat) / 4
@@ -142,11 +163,20 @@ class Map(object):
         img = geotiler.render_map(self.mm)
         ax.imshow(img)
 
-        ax.scatter(x, y, c=self.colors, edgecolor='red', s=self.acc, alpha=0.1)
+        ax.scatter(x, y, c=self.colors, edgecolor=self.colors, s=self.acc, alpha=.2)
         ax.plot(x, y)
         for i, txt in enumerate(self.annot):
             if txt:
-                ax.annotate(txt, (x[i],y[i]))
+                if len(txt) < 4:
+                    color = 'g'
+                else:
+                    color = np.random.rand(3,)
+                xylim = 15
+                xtext = -xylim if i % 4 == 0 else xylim
+                ytext = -xylim if i % 4 < 2 else xylim
+                ax.annotate(txt, xy=(x[i], y[i]), xytext=(xtext, ytext), color=color,
+                            textcoords='offset points', ha='center', va='bottom', size='xx-small',
+                            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5',color=color))
 
         plt.savefig(filename, bbox_inches='tight')
         plt.close()
