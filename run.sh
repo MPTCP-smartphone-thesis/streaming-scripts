@@ -25,6 +25,8 @@ DATE_END=$(date +%s000)
 echo "Stop: $DATE_END"
 echo $DATE_END >> "$DIR/dates.log"
 ./stop_ice_full_pcap_distant.sh
+echo "Launching analysis"
+./start_analyse_distant.sh ${DATE_START}
 
 echo "$INFOTXT" >> "$DIR/info.txt"
 
