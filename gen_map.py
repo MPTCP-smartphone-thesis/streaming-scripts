@@ -19,7 +19,7 @@
 #  MA 02110-1301, USA.
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 ##################################
@@ -40,6 +40,7 @@ parser.add_argument("timeend", type=int, help="End: to this timestamp")
 # https://wiki.openstreetmap.org/wiki/Zoom_levels
 parser.add_argument("-z", "--zoom", type=int, help="Zoom level for the map", default=18)
 parser.add_argument("-o", "--output", help="Output file", default="export")
+parser.add_argument("--open", help="Open output file", action='store_true')
 
 
 ##################################
@@ -187,3 +188,7 @@ if __name__ == "__main__":
     filename = args.output + "/map_" + args.wlan + "_" + time.strftime("%Y%m%d-%H%M%S") + ".pdf"
     mm.draw(filename)
     print("File exported to: " + filename)
+    if args.open:
+        print("Opening: " + filename)
+        from subprocess import call
+        call(['xdg-open', filename])
