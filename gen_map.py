@@ -49,6 +49,9 @@ parser.add_argument("--open", help="Open output file", action='store_true')
 
 import numpy as np
 
+import matplotlib
+# Do not use any X11 backend
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import geotiler
 
