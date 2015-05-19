@@ -13,7 +13,7 @@ ulimit -n 51200 # try a bigger one
 
 analyse() {
     echo "Analyse $i, log: $2"
-    ./analyze.py -i "$1" -p '_ice' -C -W >> "$2" 2>&1 &
+    ./analyze.py -T -i "$1" -p '_ice' -C -W >> "$2" 2>&1 &
     PID_CURR=$!
     echo $PID_CURR >> "$PID"
     wait $PID_CURR && date -R > "$1.done"
